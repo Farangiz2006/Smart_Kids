@@ -246,7 +246,7 @@
                 <table id="teacher-table">
                     <thead><tr><th>Ism</th><th>Guruh</th><th>Login</th><th>Parol</th></tr></thead>
                     <tbody>
-                        <tr><td>Farangiz Jumaboyeva</td><td>Bilimdon</td><td>farangiz_adm</td><td>""</td></tr>
+                        <tr><td>Farangiz Jumaboyeva</td><td>Bilimdon</td><td>farangiz_adm</td><td>1206</td></tr>
                         <tr><td>Dilnoza Axmedova</td><td>Yulduzcha</td><td>dilnoza_77</td><td>5566</td></tr>
                     </tbody>
                 </table>
@@ -377,12 +377,12 @@
             const user = document.getElementById('login-user').value;
             const pass = document.getElementById('login-pass').value;
 
-            if(user === 'Farangiz' && pass === '') {
+            if(user === 'Farangiz' && pass === '1206') {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('sidebar-ui').style.display = 'flex';
                 document.getElementById('main-ui').style.display = 'block';
             } else {
-                alert("Xato login yoki parol! (Admin: Farangiz, Parol: "")");
+                alert("Xato login yoki parol! (Admin: Farangiz, Parol: 1206)");
             }
         }
 
