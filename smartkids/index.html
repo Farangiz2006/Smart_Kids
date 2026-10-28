@@ -1,0 +1,475 @@
+﻿<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Kids | Ultimate V10 Enterprise</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+
+        :root {
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-strong: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --accent: #FFD700;
+            --primary: #00f2fe;
+            --text: #ffffff;
+            --dark-text: #1a1a1a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            height: 100vh;
+            background: url('https://bilimlar.uz/wp-content/uploads/2024/10/Xayr-bogcham-sheri.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            display: flex;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: -1;
+        }
+
+        /* Login/Registration Overlay */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(30px);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+
+        .auth-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 40px; border-radius: 30px; width: 400px; text-align: center;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(40px);
+            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; padding: 25px 15px;
+            overflow-y: auto; transition: 0.3s;
+        }
+
+        .sidebar h2 { font-family: 'Fredoka'; color: var(--accent); font-size: 28px; text-align: center; margin-bottom: 30px; text-shadow: 0 0 15px rgba(255,215,0,0.4); }
+
+        .nav-item {
+            padding: 14px 18px; margin-bottom: 8px; border-radius: 15px; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; gap: 12px; font-weight: 600;
+            color: rgba(255,255,255,0.85); font-size: 14px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--glass-strong); color: white; border: 1px solid var(--glass-border);
+            transform: translateX(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Main Content */
+        .main { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
+
+        .glass-card {
+            background: var(--glass); backdrop-filter: blur(50px); border: 1px solid var(--glass-border);
+            border-radius: 25px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        h1, h2, h3 { font-family: 'Fredoka'; margin-bottom: 15px; color: var(--accent); }
+
+        /* Form Controls - Fixed Select problem */
+        input, select, textarea {
+            background: #ffffff !important; border: 2px solid var(--primary);
+            padding: 12px; border-radius: 12px; color: var(--dark-text) !important;
+            width: 100%; margin-bottom: 15px; outline: none; font-weight: 800;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 20px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { background: rgba(255,255,255,0.1); color: var(--accent); font-size: 12px; text-transform: uppercase; }
+
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #000;
+            padding: 12px 24px; border-radius: 12px; border: none; font-weight: 800;
+            cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
+        .btn-danger { background: #ff4757; color: white; }
+
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* Chat UI */
+        .chat-box { height: 400px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.4; }
+        .admin-msg { background: var(--primary); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .parent-msg { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .stat-badge { background: var(--glass-strong); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--glass-border); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1 style="color: var(--accent); font-size: 40px; margin-bottom: 10px;">Smart Kids</h1>
+            <p id="auth-title" style="margin-bottom: 25px;">Tizimga kirish (Admin: Farangiz)</p>
+            <div id="login-form">
+                <input type="text" id="login-user" placeholder="Login">
+                <input type="password" id="login-pass" placeholder="Parol">
+                <button class="btn" style="width: 100%;" onclick="checkAuth()">KIRISH</button>
+                <p style="margin-top: 15px; font-size: 13px; cursor: pointer;" onclick="toggleAuth()">Ro'yxatdan o'tish</p>
+            </div>
+            <div id="reg-form" style="display: none;">
+                <input type="text" placeholder="To'liq ismingiz">
+                <input type="text" placeholder="Yangi login">
+                <input type="password" placeholder="Yangi parol">
+                <button class="btn" style="width: 100%;" onclick="alert('Ro\'yxatdan o\'tildi! Endi kiring.')">RO'YXATDAN O'TISH</button>
+                <p style="margin-top: 15px; font-size: 13px; cursor: pointer;" onclick="toggleAuth()">Kirishga qaytish</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="sidebar-ui" class="sidebar" style="display: none;">
+        <h2>Smart Kids</h2>
+        <div class="nav-item active" onclick="showSec('all', this)">🏠 Bosh sahifa</div>
+        <div class="nav-item" onclick="showSec('docs', this)">📂 Hujjatlar</div>
+        <div class="nav-item" onclick="showSec('teachers', this)">👩‍🏫 Tarbiyachilar</div>
+        <div class="nav-item" onclick="showSec('kids', this)">🧒 Bolalar & Guruhlar</div>
+        <div class="nav-item" onclick="showSec('menu', this)">🍱 Taomnoma</div>
+        <div class="nav-item" onclick="showSec('courses', this)">🚀 Pulli Kurslar</div>
+        <div class="nav-item" onclick="showSec('media', this)">🎬 Ertaklar Olami</div>
+        <div class="nav-item" onclick="showSec('finance', this)">💰 To'lovlar</div>
+        <div class="nav-item" onclick="showSec('chat', this)">💬 Online Chat</div>
+        
+        <div style="margin-top: auto;">
+            <button class="btn btn-danger" style="width: 100%;" onclick="logout()">🚪 Tizimdan chiqish</button>
+        </div>
+    </div>
+
+    <div id="main-ui" class="main" style="display: none;">
+        
+        <div id="all" class="content-section active">
+            <h1>Tizim Monitoringi</h1>
+            <div class="grid-dashboard" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 25px;">
+                <div class="stat-badge"><h3>156</h3><p>Bolalar</p></div>
+                <div class="stat-badge"><h3>14</h3><p>Xodimlar</p></div>
+                <div class="stat-badge"><h3>98%</h3><p>Davomat</p></div>
+                <div class="stat-badge"><h3>4.9</h3><p>Reyting</p></div>
+            </div>
+
+            <div class="grid-dashboard">
+                <div class="glass-card">
+                    <h2>🍱 Bugungi Menyu</h2>
+                    <table>
+                        <tr><td>Nonushta</td><td>Sutli grechka, pishloq</td></tr>
+                        <tr><td>Tushlik</td><td>Mastava, No'xatli go'sht</td></tr>
+                        <tr><td>Polden</td><td>Bulochka, Kakao, Banan</td></tr>
+                    </table>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="showSec('menu')">To'liq ko'rish</button>
+                </div>
+
+                <div class="glass-card">
+                    <h2>💰 To'lovlar (Oxirgi)</h2>
+                    <p>• Aliyev Umar: 700,000 (Click)</p>
+                    <p>• Karimov Anas: 700,000 (Payme)</p>
+                    <p>• Saidova Omina: 700,000 (Naqd)</p>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="showSec('finance')">Batafsil</button>
+                </div>
+
+                <div class="glass-card">
+                    <h2>📂 Metodik Hujjatlar</h2>
+                    <p>✅ Fevral Davomati (To'liq)</p>
+                    <p>✅ Ish reja (Mart oyi tayyor)</p>
+                    <p>✅ Ilk Qadam (Yillik dastur)</p>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="showSec('docs')">Boshqarish</button>
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-top: 25px;">
+                <h2>👩‍🏫 Navbatchi Tarbiyachilar</h2>
+                <div style="display: flex; gap: 15px; overflow-x: auto;">
+                    <div class="stat-badge">Farangiz J. (Bosh)</div>
+                    <div class="stat-badge">Malika S. (Yulduzcha)</div>
+                    <div class="stat-badge">Aziza K. (Kamalak)</div>
+                    <div class="stat-badge">Gulnoza R. (Bilimdon)</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="docs" class="content-section">
+            <h2>📂 Metodik Hujjatlar va O'quv Rejalari</h2>
+            <div class="grid-dashboard">
+                <div class="glass-card">
+                    <h3>📓 Davomat Daftar (E-Jurnal)</h3>
+                    <p>Barcha guruhlarning kunlik va oylik hisoboti.</p>
+                    <table>
+                        <tr><th>Ism</th><th>Dush</th><th>Sesh</th><th>Chor</th></tr>
+                        <tr><td>Umar A.</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                        <tr><td>Anas K.</td><td>✅</td><td>❌</td><td>✅</td></tr>
+                    </table>
+                    <button class="btn" style="margin-top: 10px; width: 100%;">Tahrirlash</button>
+                </div>
+                <div class="glass-card">
+                    <h3>📅 Oylik Ish Reja</h3>
+                    <p>Davlat standartlari asosida oylik mashg'ulotlar grafigi.</p>
+                    <button class="btn" style="width: 100%;">Yuklab olish (DOCX)</button>
+                    <button class="btn" style="width: 100%; margin-top: 5px; background: #fff; color: #000;">Yangi qo'shish</button>
+                </div>
+                <div class="glass-card">
+                    <h3>📘 Ilk Qadam Dasturi</h3>
+                    <p>3-7 yoshli bolalar uchun takomillashtirilgan davlat o'quv dasturi.</p>
+                    <button class="btn" style="width: 100%; margin-top: 30px;">O'qish</button>
+                </div>
+                <div class="glass-card">
+                    <h3>🗺️ Rivojlanish Xaritasi</h3>
+                    <p>Har bir bolaning individual rivojlanish ko'rsatkichlari dinamikasi.</p>
+                    <button class="btn" style="width: 100%; margin-top: 30px;">Ko'rish</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="teachers" class="content-section">
+            <div class="glass-card">
+                <h2>👩‍🏫 Yangi Tarbiyachi Qo'shish</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" id="t-name" placeholder="F.I.SH">
+                    <input type="text" id="t-group" placeholder="Guruh nomi">
+                    <input type="text" id="t-login" placeholder="Tizim uchun Login">
+                    <input type="password" id="t-pass" placeholder="Tizim uchun Parol">
+                </div>
+                <button class="btn" onclick="addTeacher()">Saqlash va Login berish</button>
+            </div>
+            <div class="glass-card">
+                <table id="teacher-table">
+                    <thead><tr><th>Ism</th><th>Guruh</th><th>Login</th><th>Parol</th></tr></thead>
+                    <tbody>
+                        <tr><td>Farangiz Jumaboyeva</td><td>Bilimdon</td><td>farangiz_adm</td><td>1206</td></tr>
+                        <tr><td>Dilnoza Axmedova</td><td>Yulduzcha</td><td>dilnoza_77</td><td>5566</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="kids" class="content-section">
+            <div class="glass-card">
+                <h2>🧒 Bolalar Ro'yxati (Guruhlar bo'yicha)</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="k-name" placeholder="Ism Familiya" style="margin:0">
+                    <select id="k-group-sel" style="margin:0">
+                        <option>Bilimdon (Katta)</option>
+                        <option>Yulduzcha (O'rta)</option>
+                        <option>Kamalak (Kichik)</option>
+                        <option>Erto'plar (Tayyorlov)</option>
+                    </select>
+                    <button class="btn" onclick="addKid()">+ Qo'shish</button>
+                </div>
+                <table id="kids-table">
+                    <thead><tr><th>Ism</th><th>Guruh</th><th>To'lov</th><th>Davomat %</th></tr></thead>
+                    <tbody>
+                        <tr><td>Aliyev Umar</td><td>Bilimdon</td><td>✅</td><td>98%</td></tr>
+                        <tr><td>Saidova Omina</td><td>Yulduzcha</td><td>✅</td><td>100%</td></tr>
+                        <tr><td>Karimov Anas</td><td>Kamalak</td><td>✅</td><td>92%</td></tr>
+                        <tr><td>Baxtiyorov Jasur</td><td>Bilimdon</td><td>❌</td><td>85%</td></tr>
+                        <tr><td>Nazarova Soliha</td><td>Yulduzcha</td><td>✅</td><td>99%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="menu" class="content-section">
+            <h2>🍱 Haftalik Boyitilgan Taomnoma</h2>
+            <div class="glass-card">
+                <table>
+                    <thead><tr><th>Kun</th><th>Nonushta</th><th>Tushlik</th><th>Polden</th></tr></thead>
+                    <tbody>
+                        <tr><td>Dushanba</td><td>Shirguruch, Sariyog'</td><td>Mastava, Somsa</td><td>Keks, Sut</td></tr>
+                        <tr><td>Seshanba</td><td>Quymoq, Choy</td><td>No'xatli sho'rva, Osh</td><td>Olma, Sharbat</td></tr>
+                        <tr><td>Chorshanba</td><td>Grechka, Tuxum</td><td>Lag'mon, Mevalar</td><td>Pechenye, Sut</td></tr>
+                        <tr><td>Payshanba</td><td>Manna bo'tqasi</td><td>Sho'rva, Kotlet</td><td>Banan, Choy</td></tr>
+                        <tr><td>Juma</td><td>Tuxum, Qaymoq</td><td>Moshxo'rda, Baliq</td><td>Bulochka, Kakao</td></tr>
+                    </tbody>
+                </table>
+                <button class="btn" style="margin-top: 15px;">📋 Menyu Tahrirlash</button>
+            </div>
+        </div>
+
+        <div id="courses" class="content-section">
+            <h2>🚀 Pulli Rivojlantiruvchi Kurslar</h2>
+            <div class="grid-dashboard">
+                <div class="glass-card">
+                    <h3>🧮 Mental Arifmetika</h3>
+                    <p>Narxi: 180,000 so'm/oy</p>
+                    <p>O'qituvchi: Sardor S.</p>
+                    <button class="btn" style="width:100%">Ro'yxatga olish</button>
+                </div>
+                <div class="glass-card">
+                    <h3>🇬🇧 Ingliz tili (Play & Learn)</h3>
+                    <p>Narxi: 220,000 so'm/oy</p>
+                    <p>O'qituvchi: Miss Dilnoza</p>
+                    <button class="btn" style="width:100%">Ro'yxatga olish</button>
+                </div>
+                <div class="glass-card">
+                    <h3>🎨 Badiiy san'at</h3>
+                    <p>Narxi: 150,000 so'm/oy</p>
+                    <p>O'qituvchi: Aziz R.</p>
+                    <button class="btn" style="width:100%">Ro'yxatga olish</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="media" class="content-section">
+            <h2>🎬 Ertaklar Olami va Videodarsliklar</h2>
+            <div class="grid-dashboard">
+                <div class="glass-card">
+                    <div style="height:150px; background:rgba(0,0,0,0.4); border-radius:15px; display:flex; align-items:center; justify-content:center;">🎞️ ERTAK</div>
+                    <h4>Zumrad va Qimmat</h4>
+                    <button class="btn" style="width:100%">Ko'rish</button>
+                </div>
+                <div class="glass-card">
+                    <div style="height:150px; background:rgba(0,0,0,0.4); border-radius:15px; display:flex; align-items:center; justify-content:center;">🎞️ DARS</div>
+                    <h4>Ingliz tili: Ranglar</h4>
+                    <button class="btn" style="width:100%">Boshlash</button>
+                </div>
+                <div class="glass-card">
+                    <div style="height:150px; background:rgba(0,0,0,0.4); border-radius:15px; display:flex; align-items:center; justify-content:center;">🎞️ DARS</div>
+                    <h4>Raqamlarni o'rganamiz</h4>
+                    <button class="btn" style="width:100%">Boshlash</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="chat" class="content-section">
+            <h2>💬 Online Chat (Muloqot markazi)</h2>
+            <div class="glass-card">
+                <div class="chat-box" id="chat-box">
+                    <div class="msg parent-msg"><b>Ota-ona (Umar):</b> Assalomu alaykum, bugun Umarjon darsda qanday qatnashdi?<small>10:15</small></div>
+                    <div class="msg admin-msg"><b>Admin (Siz):</b> Vaalaykum assalom, hammasi a'lo darajada. Mashg'ulotlarda juda faol bo'ldi.<small>10:20</small></div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <input type="text" id="chat-input" placeholder="Xabarni yozing..." style="margin:0">
+                    <button class="btn" onclick="sendMsg()">Yuborish</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="finance" class="content-section">
+            <h2>💰 To'lovlar va Moliyaviy Hisobot</h2>
+            <div class="glass-card">
+                <table>
+                    <thead><tr><th>Ota-ona</th><th>Bola</th><th>Oy</th><th>Summa</th><th>Holat</th></tr></thead>
+                    <tbody>
+                        <tr><td>Aziz Aliyev</td><td>Umar</td><td>Fevral</td><td>700,000</td><td>✅ To'langan</td></tr>
+                        <tr><td>Anvar Karimov</td><td>Anas</td><td>Fevral</td><td>700,000</td><td>✅ To'langan</td></tr>
+                        <tr><td>Sardor Baxtiyorov</td><td>Jasur</td><td>Fevral</td><td>700,000</td><td>❌ Qarzdor</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Auth Logic
+        function checkAuth() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+
+            if(user === 'Farangiz' && pass === '1206') {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('sidebar-ui').style.display = 'flex';
+                document.getElementById('main-ui').style.display = 'block';
+            } else {
+                alert("Xato login yoki parol! (Admin: Farangiz, Parol: 1206)");
+            }
+        }
+
+        function logout() {
+            if(confirm("Tizimdan chiqmoqchimisiz?")) {
+                document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('sidebar-ui').style.display = 'none';
+                document.getElementById('main-ui').style.display = 'none';
+            }
+        }
+
+        function toggleAuth() {
+            const loginF = document.getElementById('login-form');
+            const regF = document.getElementById('reg-form');
+            const title = document.getElementById('auth-title');
+            
+            if(loginF.style.display === 'none') {
+                loginF.style.display = 'block';
+                regF.style.display = 'none';
+                title.innerText = "Tizimga kirish (Admin: Farangiz)";
+            } else {
+                loginF.style.display = 'none';
+                regF.style.display = 'block';
+                title.innerText = "Ro'yxatdan o'tish";
+            }
+        }
+
+        // Section Navigation
+        function showSec(id, el) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if(el) {
+                el.classList.add('active');
+            } else {
+                // Dashboarddan o'tganda navitemni topish
+                const items = document.querySelectorAll('.nav-item');
+                items.forEach(item => {
+                    if(item.innerText.toLowerCase().includes(id.toLowerCase())) item.classList.add('active');
+                });
+            }
+        }
+
+        // Add Functions
+        function addTeacher() {
+            const name = document.getElementById('t-name').value;
+            const group = document.getElementById('t-group').value;
+            const login = document.getElementById('t-login').value;
+            const pass = document.getElementById('t-pass').value;
+
+            if(name && login) {
+                const table = document.getElementById('teacher-table').querySelector('tbody');
+                table.innerHTML += `<tr><td>${name}</td><td>${group}</td><td>${login}</td><td>${pass}</td></tr>`;
+                alert(name + " tizimga qo'shildi!");
+                document.getElementById('t-name').value = "";
+            }
+        }
+
+        function addKid() {
+            const name = document.getElementById('k-name').value;
+            const group = document.getElementById('k-group-sel').value;
+
+            if(name) {
+                const table = document.getElementById('kids-table').querySelector('tbody');
+                table.innerHTML += `<tr><td>${name}</td><td>${group}</td><td>❌</td><td>0%</td></tr>`;
+                alert(name + " " + group + "ga qo'shildi!");
+                document.getElementById('k-name').value = "";
+            }
+        }
+
+        function sendMsg() {
+            const inp = document.getElementById('chat-input');
+            const box = document.getElementById('chat-box');
+            if(inp.value.trim()) {
+                box.innerHTML += `<div class="msg admin-msg"><b>Siz:</b> ${inp.value}<small>Hozir</small></div>`;
+                const text = inp.value;
+                inp.value = "";
+                box.scrollTop = box.scrollHeight;
+
+                // Auto Sim response
+                setTimeout(() => {
+                    box.innerHTML += `<div class="msg parent-msg"><b>Ota-ona:</b> Tushunarli, rahmat katta!</div>`;
+                    box.scrollTop = box.scrollHeight;
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
